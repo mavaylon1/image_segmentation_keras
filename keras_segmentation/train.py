@@ -7,6 +7,8 @@ from keras.metrics import MeanIoU
 from keras import backend as K
 
 from keras.callbacks import Callback, ModelCheckpoint, EarlyStopping
+smooth=100
+
 
 def dice_coef(y_true, y_pred):
     y_truef=K.flatten(y_true)
