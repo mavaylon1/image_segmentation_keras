@@ -4,8 +4,18 @@ from .data_utils.data_loader import image_segmentation_generator, \
 import glob
 import six
 from keras.metrics import MeanIoU
+from keras import backend as K
+
 from keras.callbacks import Callback, ModelCheckpoint, EarlyStopping
 
+def dice_coef(y_true, y_pred):
+    y_truef=K.flatten(y_true)
+    y_predf=K.flatten(y_pred)
+    And=K.sum(y_truef* y_predf)
+    return((2* And + smooth) / (K.sum(y_truef) + K.sum(y_predf) + smooth))
+
+def dice_coef_loss(y_true, y_pred):
+    return -dice_coef(y_true, y_pred)
 
 def find_latest_checkpoint(checkpoints_path, fail_safe=True):
 
@@ -101,9 +111,8 @@ def train(model,
         else:
             loss_k = 'categorical_crossentropy'
 
-        model.compile(loss=loss_k,
-                      optimizer=optimizer_name,
-                      metrics=[MeanIoU(num_classes=2)])
+        model.compile(loss=dice_coef_loss, metrics=[dice_coef],
+                      optimizer=optimizer_name)
 
     if checkpoints_path is not None:
         with open(checkpoints_path+"_config.json", "w") as f:
@@ -151,8 +160,8 @@ def train(model,
             n_classes, input_height, input_width, output_height, output_width)
 
     callbacks = [
-        ModelCheckpoint("pet_class_crf.h5", verbose=1, save_best_only=True, save_weights_only=True,monitor='val_accuracy'),
-        EarlyStopping(monitor="accuracy", mode='max', min_delta=.005, patience=5, verbose=1)
+        ModelCheckpoint("pet_class_crf.h5", verbose=1, save_best_only=True, save_weights_only=True,monitor='val_dice_coef'),
+        EarlyStopping(monitor="val_dice_coef", mode='max', min_delta=.005, patience=5, verbose=1)
     ]
     print('correct')
 
