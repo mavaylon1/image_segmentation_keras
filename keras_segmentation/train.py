@@ -112,9 +112,14 @@ def train(model,
             loss_k = masked_categorical_crossentropy
         else:
             loss_k = 'categorical_crossentropy'
+        
+        model.compile(loss=loss_k,
+                      optimizer=optimizer_name,
+                      metrics=['accuracy'])
 
-        model.compile(loss=dice_coef_loss, metrics=[dice_coef],
-                      optimizer=optimizer_name)
+#         model.compile(loss=dice_coef_loss, metrics=[dice_coef],
+#                       optimizer=optimizer_name)
+
 
     if checkpoints_path is not None:
         with open(checkpoints_path+"_config.json", "w") as f:
@@ -162,8 +167,8 @@ def train(model,
             n_classes, input_height, input_width, output_height, output_width)
 
     callbacks = [
-        ModelCheckpoint("pet_class_crf.h5", verbose=1, save_best_only=True, save_weights_only=True,monitor='val_dice_coef'),
-        EarlyStopping(monitor="val_dice_coef", mode='max', min_delta=.005, patience=5, verbose=1)
+        ModelCheckpoint("pet_class_vanilla.h5", verbose=1, save_best_only=True, save_weights_only=True,monitor='val_accuracy'),
+        EarlyStopping(monitor="accuracy", mode='max', min_delta=.005, patience=5, verbose=1)
     ]
     print('correct')
 
