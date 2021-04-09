@@ -117,6 +117,13 @@ def train(model,
                       optimizer=optimizer_name,
                       metrics=['accuracy'])
 
+#         model.compile(loss=dice_coef_loss, metrics=[dice_coef],
+#                       optimizer=optimizer_name)
+
+        model.compile(loss=loss_k,
+                      optimizer=optimizer_name,
+                      metrics=['accuracy'])
+
     if checkpoints_path is not None:
         with open(checkpoints_path+"_config.json", "w") as f:
             json.dump({
