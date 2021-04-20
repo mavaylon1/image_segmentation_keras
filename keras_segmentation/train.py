@@ -5,7 +5,7 @@ from .data_utils.data_loader import image_segmentation_generator, \
     verify_segmentation_dataset
 import six
 from keras.callbacks import Callback
-from tensorflow.keras.callbacks import ModelCheckpoint
+from keras.callbacks import ModelCheckpoint, EarlyStopping
 import tensorflow as tf
 import glob
 import sys
@@ -193,5 +193,4 @@ def train(model,
                   steps_per_epoch=steps_per_epoch,
                   validation_data=val_gen,
                   validation_steps=val_steps_per_epoch,
-                  epochs=epochs, callbacks=callbacks,
-                  use_multiprocessing=gen_use_multiprocessing, initial_epoch=initial_epoch)
+                  epochs=epochs, callbacks=callbacks)
